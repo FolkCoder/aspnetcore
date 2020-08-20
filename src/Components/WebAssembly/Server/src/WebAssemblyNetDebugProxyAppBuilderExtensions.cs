@@ -1,7 +1,9 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Net;
+using System.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Server;
 
 namespace Microsoft.AspNetCore.Builder
@@ -21,7 +23,10 @@ namespace Microsoft.AspNetCore.Builder
             {
                 app.Use(async (context, next) =>
                 {
-                    var debugProxyBaseUrl = await DebugProxyLauncher.EnsureLaunchedAndGetUrl(context.RequestServices);
+                    var queryParams = HttpUtility.ParseQueryString(context.Request.QueryString.Value);
+                    var browserUrl = new Uri(queryParams.Get("browser"));
+
+                    var debugProxyBaseUrl = await DebugProxyLauncher.EnsureLaunchedAndGetUrl(context.RequestServices, browserUrl);
                     var requestPath = context.Request.Path.ToString();
                     if (requestPath == string.Empty)
                     {
@@ -35,7 +40,7 @@ namespace Microsoft.AspNetCore.Builder
                             await targetPickerUi.Display(context);
                             break;
                         case "/ws-proxy":
-                            context.Response.Redirect($"{debugProxyBaseUrl}{requestPath}{context.Request.QueryString}");
+                            context.Response.Redirect($"{debugProxyBaseUrl}{browserUrl.PathAndQuery}");
                             break;
                         default:
                             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
