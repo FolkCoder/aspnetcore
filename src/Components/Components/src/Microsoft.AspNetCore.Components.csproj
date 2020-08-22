@@ -17,8 +17,8 @@
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
 
-  <!-- These references were removed in 3.0 -->
-  <ItemGroup>
+  <ItemGroup Condition=" '$(AspNetCoreMajorMinorVersion)' == '6.0' ">
+    <!-- These dependencies were removed in 5.0. The suppressions can be removed after 5.0 RTM is released. -->
     <SuppressBaselineReference Include="Microsoft.AspNetCore.Components.Analyzers" />
     <SuppressBaselineReference Include="Microsoft.AspNetCore.Authorization" />
     <SuppressBaselineReference Include="System.ComponentModel.Annotations" />
